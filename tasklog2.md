@@ -19,7 +19,7 @@ function App() {
         <Navbar isOpened={isOpened} preference={preference} setPreference={setPreference} waiting={waiting} />
         <Hero setIsOpen={setIsOpen} isOpen={isOpened} waiting={waiting} setWaiting={setWaiting} />
         <PopupModal setPreference={setPreference} isOpen={isOpen} setIsOpen={setIsOpen} setIsOpened={setIsOpened} isOpened={isOpened} />
-        Hello world
+        Hello 
       </div>
     </ThemeProvider>
   )
