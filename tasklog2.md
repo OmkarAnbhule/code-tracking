@@ -1,28 +1,79 @@
-import { useState } from 'react'
-import './App.css'
-import Hero from './components/Hero'
-import Navbar from './components/Navbar'
-import { ThemeProvider } from "@/components/theme-provider"
-import PopupModal from './components/PopupModal'
-import { Toaster } from './components/ui/sonner'
+# Feat: Add user name to navbar
 
-function App() {
-  const [isOpen, setIsOpen] = useState(false);
-  const [isOpened, setIsOpened] = useState(false)
-  const [preference, setPreference] = useState('')
-  const [waiting, setWaiting] = useState(true);
+This commit adds the user's name to the navbar. This provides a visual cue to the user about their identity within the application.
 
-  return (
-    <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
-      <Toaster />
-      <div className='w-[100%] min-h-screen '>
-        <Navbar isOpened={isOpened} preference={preference} setPreference={setPreference} waiting={waiting} />
-        <Hero setIsOpen={setIsOpen} isOpen={isOpened} waiting={waiting} setWaiting={setWaiting} />
-        <PopupModal setPreference={setPreference} isOpen={isOpen} setIsOpen={setIsOpen} setIsOpened={setIsOpened} isOpened={isOpened} />
-        Hello 
-      </div>
-    </ThemeProvider>
-  )
+The previous code displayed a login form or logout button based on the user's authentication status.  This commit enhances that by adding a display of the user's name in a dedicated section of the navbar.
+
+**Code:**
+
+```javascript
+import React, { useEffect } from 'react'
+import { Form } from '@/modules/Form'
+import { useDispatch, useSelector } from 'react-redux'
+import { Button } from './ui/button';
+import { toast } from 'sonner';
+import { resetUser } from '@/redux/slices/userSlice';
+import { SwitchCamera } from 'lucide-react';
+import { userInitialState } from '@/redux/intialStates/userInitialState';
+import RoomList from './RoomList';
+
+export default function Navbar({ setIsOpen, setIsFirstPerson, isOpen }) {
+    const { user } = useSelector((state) => state.user)
+    const dispatch = useDispatch()
+    console.log(user)
+    const signOutUser = async () => {
+        try {
+            if (user?.roomId) {
+                
+            }
+
+            dispatch(resetUser(userInitialState))
+            toast.success('Logged out successfully')
+        } catch (error) {
+            console.log(error);
+            console.error('Error signing out:', error.message);
+            toast.error('Error signing out');
+        }
+    };
+
+
+    return (
+        <div className='w-full h-14 fixed z-[10] flex justify-between backdrop-blur-3xl'>
+            <div className='w-1/4 border-2 h-full flex justify-center items-center'>
+                <p className='text-center text-[20px] font-semibold'>
+                    Meta Bazaar
+                </p>
+            </div>
+            <div className='w-1/2 h-full flex items-center'>
+                <div className='flex justify-around flex-nowrap items-center h-full w-1/3'>
+                    {
+                        user?.authenticated && !isOpen ?
+                            (
+                                <Button variant='secondary' onClick={signOutUser}>Logout</Button>
+                            )
+                            :
+                            (
+                                <Form setIsOpen={setIsOpen} isOpen={isOpen} />
+                            )
+                    }
+                    
+                </div>
+                <div className='flex w-full h-full'>
+                    <div className='w-1/3 h-full flex justify-center items-center'>
+                        <Button onClick={() => { setIsFirstPerson((prev) => !prev) }}>
+                            <SwitchCamera />
+                        </Button>
+                    </div>
+                    <div className='w-1/3 bg-gray-300 h-full flex justify-center items-center'>
+                        <RoomList roomId={user?.roomId} />
+                    </div>
+                    <div className='w-1/3 bg-gray-300 h-full flex justify-center items-center'>
+                        {user?.name}
+                    </div>
+                </div>
+            </div>
+        </div>
+    )
 }
 
-export default App
+```
